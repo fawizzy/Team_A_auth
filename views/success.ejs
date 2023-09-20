@@ -1,46 +1,27 @@
-<!DOCTYPE html>
-<html>
-  <head>
-    <title>Google SignIn</title>
-    <link
-      rel="stylesheet"
-      href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
-    />
-    <!-- load bootstrap css -->
-    <link
-      rel="stylesheet"
-      href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css"
-    />
-    <!-- load fontawesome -->
-    <style>
-      body {
-        padding-top: 70px;
-      }
-    </style>
-  </head>
-  <body>
-    <div class="container">
-      <div class="jumbotron">
-        <h1 class="text-primary text-center">
-          <span class="fa fa-user"></span> Profile Information
-        </h1>
-        <div class="row">
-          <div class="col-sm-6">
-            <div class="well">
-              <% if (user && user.email) { %>
-                <p>
-                  <strong>Id</strong>: <%= user.id %><br />
-                  <strong>Email</strong>: <%= user.email %><br />
-                  <strong>Name</strong>: <%= user.name %> 
-                </p>
-              <% } else { %>
-                <p>User information not available.</p>
-              <% } %>
-            </div>
-            
-          </div>
-        </div>
+<div class="jumbotron">
+  <h1 class="text-primary text-center">
+    <span class="fa fa-user"></span> Profile Information
+  </h1>
+  <div class="row">
+    <div class="col-sm-6">
+      <div class="well">
+        <% if (user) { %>
+          <p>
+            <strong>ID</strong>: <%= user.id %><br />
+            <strong>Name</strong>: <%= user.name %><br />
+            <% if (user.googleId) { %>
+              <strong>Email (Google)</strong>: <%= user.email %><br />
+              <strong>Avatar (Google)</strong>: <img src="<%= user.avatar %>" alt="Google Avatar" /><br />
+            <% } %>
+            <% if (user.twitterId) { %>
+              <strong>Twitter ID</strong>: <%= user.twitterId %><br />
+              <strong>Avatar (Twitter)</strong>: <img src="<%= user.avatar %>" alt="Twitter Avatar" /><br />
+            <% } %>
+          </p>
+        <% } else { %>
+          <p>User information not available.</p>
+        <% } %>
       </div>
     </div>
-  </body>
-</html>
+  </div>
+</div>
