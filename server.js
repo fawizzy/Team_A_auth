@@ -2,6 +2,8 @@ const express = require("express");
 const session = require("express-session");
 const passport = require("./config/passport-config");
 const User = require("./models/user");
+const { isLoggedIn } = require("./middlewares/isLoggedIn");
+
 const app = express();
 require("dotenv").config();
 
@@ -17,21 +19,22 @@ app.use(
 app.use(passport.initialize());
 app.use(passport.session());
 
-app.get("/success", (req, res) => {
+const renderSuccessPage = (req, res) => {
   if (req.isAuthenticated()) {
     const user = req.user;
-    //console.log(user);
     res.render("success", { user });
   } else {
-    res.redirect("/login");
+    res.redirect("/");
   }
-});
+};
 
-app.get("/error", (req, res) => res.send("Error logging in"));
-
-app.get("/", function (req, res) {
+app.get("/", isLoggedIn, function (req, res) {
   res.render("login");
 });
+
+app.get("/success",  renderSuccessPage);
+
+app.get("/error", (req, res) => res.send("Error logging in"));
 
 app.get(
   "/auth/google",
@@ -47,13 +50,11 @@ app.get(
 );
 
 app.get(
- '/auth/twitter',
- passport.authenticate('twitter', {
-   scope: ['tweet.read', 'users.read', 'offline.access'],
- })
+  "/auth/twitter",
+  passport.authenticate("twitter", {
+    scope: ["tweet.read", "users.read", "offline.access"],
+  })
 );
-
-//app.get("/auth/twitter", passport.authenticate("twitter"));
 
 app.get(
   "/auth/twitter/callback",
@@ -62,10 +63,18 @@ app.get(
     scope: ["tweet.read", "tweet.write", "users.read"],
   }),
   function (req, res) {
-    // Successful authentication, redirect home.
     res.redirect("/success");
   }
 );
+
+app.get("/logout", (req, res) => {
+  req.session.destroy((err) => {
+    if (err) {
+      console.error("Error destroying session:", err);
+    }
+    res.redirect("/home");
+  });
+});
 
 const port = process.env.PORT || 5000;
 app.listen(port, () => console.log("App listening on port " + port));
